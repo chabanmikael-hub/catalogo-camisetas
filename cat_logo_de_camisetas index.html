@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catálogo de Camisetas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              500: '#0284c7',
+              600: '#0369a1',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Header / Navbar -->
+  <header class="sticky top-0 z-30 bg-slate-900 text-white shadow-md border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        
+        <!-- Logo & Title -->
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white font-black text-xl shadow-lg">
+            <i class="fa-solid fa-shirt"></i>
+          </div>
+          <div>
+            <h1 class="text-xl font-extrabold tracking-tight">Catálogo de Camisetas</h1>
+            <p class="text-xs text-slate-400">Colección Exclusiva & Indumentaria Deportiva</p>
+          </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="relative flex-1 max-w-md">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </div>
+          <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="Buscar por equipo, modelo, año..." 
+            class="w-full pl-10 pr-10 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
+          />
+          <button id="clearSearch" class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-white">
+            <i class="fa-solid fa-circle-xmark"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero & Filters Section -->
+  <section class="bg-white border-b border-slate-200 py-6 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      
+      <!-- Category Badges -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none" id="categoryFilters">
+        <button data-filter="all" class="filter-btn active px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-slate-900 text-white shadow-sm transition-all">
+          Todos los modelos
+        </button>
+        <button data-filter="BOCA" class="filter-btn px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">
+          Boca Juniors
+        </button>
+        <button data-filter="RIVER" class="filter-btn px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">
+          River Plate
+        </button>
+        <button data-filter="AFA" class="filter-btn px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">
+          Argentina / AFA
+        </button>
+        <button data-filter="RETRO" class="filter-btn px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">
+          Retro & Clásicos
+        </button>
+        <button data-filter="EUROPA" class="filter-btn px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">
+          Internacionales
+        </button>
+        <button data-filter="NIÑO" class="filter-btn px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">
+          Niño / Dama
+        </button>
+      </div>
+
+      <!-- Counter Bar -->
+      <div class="mt-4 flex items-center justify-between text-xs text-slate-500 font-medium">
+        <span id="productCounter">Cargando productos...</span>
+        <span class="hidden sm:inline-block">Hacé clic en cualquier prenda para pedirla por WhatsApp</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Products Grid -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div id="productsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+      <!-- Standard Cards dynamically loaded here -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="hidden flex-col items-center justify-center py-16 text-center">
+      <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-2xl mb-4">
+        <i class="fa-solid fa-shirt"></i>
+      </div>
+      <h3 class="text-base font-bold text-slate-800">No se encontraron camisetas</h3>
+      <p class="text-xs text-slate-500 mt-1 max-w-sm">Intenta buscar con otros términos o seleccionar otra categoría.</p>
+      <button id="resetFiltersBtn" class="mt-4 px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-semibold hover:bg-slate-800 transition-all">
+        Ver todo el catálogo
+      </button>
+    </div>
+  </main>
+
+  <!-- Product Preview Modal -->
+  <div id="productModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl transition-all transform duration-200 scale-95 opacity-0" id="modalContainer">
+      <div class="relative bg-slate-100 aspect-square flex items-center justify-center overflow-hidden group">
+        <img id="modalImage" src="" alt="" class="w-full h-full object-cover" />
+        <button id="closeModal" class="absolute top-3 right-3 w-9 h-9 rounded-full bg-slate-900/70 text-white flex items-center justify-center hover:bg-slate-900 transition-all">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-2">
+          <span id="modalTag" class="inline-block px-2.5 py-1 bg-sky-100 text-sky-800 rounded-md text-[10px] font-bold uppercase tracking-wider">
+            Disponible
+          </span>
+          <!-- Modal Price -->
+          <span id="modalPrice" class="text-xl font-extrabold text-emerald-600"></span>
+        </div>
+        <h3 id="modalTitle" class="text-lg font-bold text-slate-900 leading-snug"></h3>
+        <p class="text-xs text-slate-500 mt-2">
+          Consulta talles, disponibilidad inmediata y formas de pago directamente por WhatsApp.
+        </p>
+
+        <div class="mt-6 flex items-center gap-3">
+          <a id="modalWhatsappBtn" href="#" target="_blank" class="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all">
+            <i class="fa-brands fa-whatsapp text-lg"></i>
+            ¡Quiero esta camiseta!
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 py-8 border-t border-slate-800 text-center text-xs">
+    <div class="max-w-7xl mx-auto px-4">
+      <p>© Catálogo de Camisetas. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Script with Clean Products Data & Logic -->
+  <script>
+    /* 
+      ===================================================================
+      💡 GUÍA PARA EDITAR O CAMBIAR PRECIOS:
+      - En la propiedad "precio" poné el número del valor (ejemplo: 35000).
+      - La página le agregará automáticamente el signo "$" y los puntos de mil.
+      - Para cambiar el número de WhatsApp, edita la variable "WHATSAPP_NUMBER".
+      ===================================================================
+    */
+
+    const WHATSAPP_NUMBER = '5491100000000'; // ⬅️ PONÉ ACÁ TU NÚMERO DE WHATSAPP CON CÓDIGO DE PAÍS Y ÁREA
+
+    const products = [
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/dddd32cad68a9ca47debf1369fd188750b3516bb5b52d6ad0a38b2879e8ea9cc460500.webp", "modelo": "CONJUNTO RIVER ICON DAMA TALLE UNICO", "precio": 38000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/a5646c128ff046c85914466ac8cbb7cdd4da1c041208e452f7fe8524aee89a85460500.webp", "modelo": "CONJUNTO BOCA ICON DAMA TALLE UNICO", "precio": 38000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/6cd714637fe5b6c596e178fd9c9dbe58b99500568e18fa885ff44009db0db8b4460500.jpg", "modelo": "BARCELONA 1999", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/1448d8f889784632227baedc3c6482c4a533658f1cf0404ab578085ffb1167b1460500.webp", "modelo": "BRASIL ALTERNATIVA 2026", "precio": 32000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/4d10cca2e8e09822696459a4a49c77892a2659a6076452ec7e21a2268a69d3f4460500.webp", "modelo": "BALCERLONA B 2003", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/d1973ce8680bf20181b243241fa272dedc27aca1657e5cbd563e0803c259b79f460500.webp", "modelo": "BOCA JUNIORS EQT BLANCA", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/86382f100fd94eb3bd0ca34eeda790429c569e5ae481129e40abaecc70905ec9460500.jpg", "modelo": "ARGENTINA 2010 IMPORTADA", "precio": 37000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/5e172ca63ee010e3c4a09f213b971ae41796f48bf484cda9b5b821465e16d730460500.webp", "modelo": "RIVER PLATE 2027 IMPORTADA", "precio": 37000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/06c6ccae1f0f7d8853a756151cbcc1e3b6ef7c39c47852022d3ef4dab5b252f1460500.jpg", "modelo": "ARSENAL OG", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/f6529da1f56258c4ffcec886fe527bbaf5f4ef2db2561b3bb17a1de2960bd081460500.jpg", "modelo": "CHELSEA 2026 ENZO", "precio": 32000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/09570721bd180c7ea9449946f482d87630258d38fa1fc9f9124393987b06fc01460500.jpg", "modelo": "CHELSEA 2026 DIBU", "precio": 32000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/53c4d7e91de3fdfb8fae748d1b663c7910de7f3e3061f374369f850516a9d708460500.jpg", "modelo": "BARCELONA 2006", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/cb5e2e50d2d6ad14903d1876da20b1bbfca4b1929c7a3ff1c7aaee8a4bf3c592460500.jpg", "modelo": "RIVER TRICOLOR PARA NIÑO", "precio": 28000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/bb6343b2686ee4a889df8dc42280c0da05ad575ee268f6d24d205e671e2d68cd460500.jpg", "modelo": "BOCA JUNIORS ANIVERSARIO 25 AÑOS BICAMPEONATO IMPORTADA", "precio": 37000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/f5f0efdc38d16ca1a9e43770bd62ff1f1aabc554e24dcd64dc18466fff3992f7460500.jpg", "modelo": "SHORT ENTRENAMIENTO BOCA JUNIORS", "precio": 22000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/e570ec7b322aa1d4e6b3496eb743a1498367dfc5283a2b14b8aa36cc4ad050ac460500.jpg", "modelo": "MANCHESTER CITY 2012", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/fdbb29efcb348d62a95750ed8b99ac8c4185326dfcc3ca17f3910561fc1b7dd3460500.jpg", "modelo": "INTER DE MIAMI 2026", "precio": 32000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/a486539649d4fef83dbe8acd250d8c09bfde24d4ee50f58f6b9d383b433464da460500.jpg", "modelo": "RIVER PLATE 125 ANIVERSARIO", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/82c67a764aae72d5f0867bf527cb3e7d2fd46996b3d2c5bda5ba9afd232a4d2e460500.jpg", "modelo": "SHORT RIVER PLATE PRE MATCH", "precio": 22000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/3a6db1d6c6c89bd5cb9ab5ef9f68c99d3a851e11b4e848d97b530bd19b5a696e460500.jpg", "modelo": "SHORT BOCA TITULAR 2026", "precio": 22000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/5e9a57697b24b70707a2478211b1de0934558ca8f1fedd1f2e8aac5012ab3f08460500.jpg", "modelo": "BOCA JUNIORS OG", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/41c6fe706202a00e79eb652a11eac3e1f3c7e0f5bfdda3f81d8cf8bc3690dce4460500.jpg", "modelo": "RIVER PLATE PRE MATCH 2027", "precio": 32000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/2e2f113a3f1b7b8d0b497998f09f8edde7bda9d186323d0f110568d743360d83460500.jpg", "modelo": "BOCA JUNIORS ALTERNATIVA NACIONAL", "precio": 30000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/b3b58027975cf11b83b4274716a63e1955fe8b1657f8c76c965b83c57d1bfc64460500.jpg", "modelo": "CHOMBA BOCA JUNIORS", "precio": 29000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/c9489af3dfb2397d16cbe78c7216bd80c891c5667a03789e933b9825eee3ba7b460500.jpg", "modelo": "CHOMBA RIVER PLATE", "precio": 29000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/e9188fb77d3d1603f7d64e94b5519131fe69746049311ffb34a62662c782ba2b460500.jpg", "modelo": "RIVER PLATE OG", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/e424a5d598ead2b5522cc738300d0b2c3bcb959561cdbb0f777cf0f74b9fe6bb460500.jpg", "modelo": "RIVER ALTERNATIVA IMPORTADA", "precio": 37000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/b136b6cb33d3a3d907d4502fd472c8912a88ed0986c52a3d7496fe8a173720f3460500.jpg", "modelo": "NORUEGA 2026 IMOPRTADA", "precio": 37000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/ccaf7a8e94f9b39a3f639245b5612352b3edde84cad72a95d3c4c399c92b2cf2460500.jpg", "modelo": "BOCA JUNIORS VIRAL 2026", "precio": 32000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/80145006bfaae22fbf3e5d52ba774e3541116333d70bcbd81300ee0fb8b97115460500.jpg", "modelo": "RIVER PLATE 1986 IMPORTADA", "precio": 37000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/a0c79f1c1cb55a546d3886df89716666224ac51bf2f83c94cff78ea3ae135098460500.jpg", "modelo": "AFA 2006 ALTERNATIVA", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/5df035af2f028204862e472c861409ae919d17af48794517fdde1ad62749c947460500.jpg", "modelo": "BOCA JUNIORS HOMENAJE 2001/2026", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/bf5fcfe82842063a995cb551040ccf2499aded3f48f1a9960053230a1ab27925460500.jpg", "modelo": "RIVER PLATE 1986 ALTERNATIVA IMPORTADA", "precio": 37000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/ef8cdd3e65ff12f2bcd010ff08ecd9cdf5c86c92cb20005f3cc40f8ceafb6a69460500.jpg", "modelo": "RIVER PLATE 2026 IMPORTADA", "precio": 37000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/15f94c27e9a81b88b97fbb128c611de2e4e0a77d86df4ba1e91ca199e3f92760460500.jpg", "modelo": "BOCA JUNIORS 2026 IMPORTADA", "precio": 37000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/48bb9bfdbcd073a9771634fab488e316904ba1e9cc109f94448b63ab4329967b460500.jpg", "modelo": "AFA 1994 ALTERNATIVA (importada)", "precio": 37000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/b35712d13066569f71a6de1268e56b79338c6218ca4454ec8fa68686241c1414460500.jpg", "modelo": "RIVER PLATE 2010 ALTERNATIVA (importada)", "precio": 37000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/d78d7ef91623ded359fc841aeb61b3120380e5a6494f672300ddc627c70b284e460500.jpg", "modelo": "BOCA JUNIORS ALTERNATIVA IMPORTADA 2026/27", "precio": 37000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/7df3f6e1c0e180168f428f666b2593f20f8737c8c362a2ef344f2ad499acb502460500.jpg", "modelo": "BRASIL 2002 NIÑO RONALDINHO", "precio": 28000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/6299ca814883e79329316ce1e0dbafe7e0a908e358c904f247f1fe4e392df394460500.jpg", "modelo": "MANCHESTER UNITED 2005 CR7 NIÑO", "precio": 28000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/913a0a01a59deda4dd5dc2aff82181e670d123d1c0c44dc0eb98ff6a0b7c440e460500.jpg", "modelo": "BOCA ALTERNATIVA NIÑO", "precio": 28000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/04966e0223024f1b71187c47a83c0f173edb375e0e780d98452cd79dc9f2ea26460500.jpg", "modelo": "BOCA JUNIORS EQT AZUL", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/89c5dc6b2be2c62d3faba85030faaf01148ea379f0fd4842fff4cc025d8b50bb460500.jpg", "modelo": "RIVER PLATE EQT", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/7761c785bd8786d0f65237e5c226123d8e819a8047a4112cd4bd553204602af3460500.jpg", "modelo": "INDEPENDIENTE 2017", "precio": 32000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/ed90f45071d522731c9a375f233a70353304f2df2cca53d08726ce694ace1d94460500.jpg", "modelo": "PORTUGAL 1992", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/4a65e517ac8f50191758cc299c1c64465d4e330ac296aeafb2b099c4e1dd6cb8460500.jpg", "modelo": "CORINTHIANS", "precio": 32000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/2c81a23a5034aae45b8e6cbc701b2ad545186b95a072cef2c9827e3a5efd8e30460500.jpg", "modelo": "HOLANDA 1998", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/42ee7ebe0111fa764a997d51ae365950dc53dc1557c9f4c7121eb6c07ea4001c460500.jpg", "modelo": "FRANCIA 1998", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/e98dd709fadc1f905ee5dddc753b12fe2fc900a67c1b95528f36732b060e2994460500.jpg", "modelo": "AFA ALTERNATIVA 2026 ISLAS MALVINAS", "precio": 32000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/4e843fcf79682e3f0926f04a0231135692d2f3769bdc3dd878d6f260db74af5a460500.jpg", "modelo": "AFA 2026 MALVINAS CON DORSAL", "precio": 34000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/8a9605c2b84350787884f48114118e85e9e832af88aa2224c5d0970526c4f06b460500.jpg", "modelo": "AFA 2026 MALVINAS LISA", "precio": 32000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/bab4acb235cb40ae0a838aa5400f45616c029a585ecfca7d6c9cb7ca213baf2f460500.jpg", "modelo": "INTER 2002", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/9788d69522f9da2c19eb41c15dcb63801daa8e6076a8796e1fd9638e42002b1f460500.jpg", "modelo": "FRANCIA 2006", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/06da522ef6ba2c7a2c672d7f765d495238043d1166b37018da580b3d33163f9f460500.jpg", "modelo": "BOCA JUNIORS 2012", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/634ee81bc8e3cf170756e8716f83c5794b4cef34361ef4c1d16faa238035f19b460500.jpg", "modelo": "RIVER ENTRENAMIENTO BLANCA", "precio": 30000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/48adb6d80cb27a53433349403302258b2f983b3f7bfb81f1d4343c0ae84c900d460500.png", "modelo": "BOCA JUNIORS 2024", "precio": 32000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/0285e118c0ce36649cd2cda2b9c6bcf0a72e14ce35feadfbcd8f7775d4dd4afd460500.jpg", "modelo": "BUZO BOCA 94", "precio": 42000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/094809c94342ebd565a08b52a73b35c19ed7c701ee0e0af2cf3a18d6aa9a9abe460500.jpg", "modelo": "PORTUGAL RETRO", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/5aa2a6909f8fd8526389ff01dca5ac433d7fd053ef0ec21e3b35ad47a93aa3c1460500.jpg", "modelo": "NAPOLI 2026", "precio": 32000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/9fd03f329c8253e2e8b9e01881bf37fe63748d1405c0456ecf1e7348794c8c6f460500.jpg", "modelo": "LIVERPOOL 2026", "precio": 32000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/07de58f9a410767a13baa18fb64468ee444e8fbd23b71e6ce64e508e4e3ce79e460500.jpg", "modelo": "CAMPERA AFA EQT BLANCA", "precio": 45000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/0dd89a57d9625ffc2cf68133e4a6445c19c4baf8ebd91f05f63601c2e826cbca460500.png", "modelo": "AFA ALGODON 3 ESTRELLAS", "precio": 30000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/484b97cea50f34f3177b5283d401dbd6c39621ed6e60de09fc770e3adab30f38460500.jpg", "modelo": "REAL MADRID 2026 ALTERNATIVA", "precio": 32000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/ef16661cbb32dd459cd0a6956f06d3fcd5bfa8ad0a6ce69a12e107577b49fcca460500.jpg", "modelo": "BOCA JUNIORS RETRO", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/180917640a1a5641f7a786a419d0d2a0d286e32d2052b8ddcc69524c63222792460500.jpg", "modelo": "CAMPERA RIVER ENTRENAMIENTO NEGRA", "precio": 45000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/8206ac542f0345eb5849a1ca220903a1270e0019118806a240f5d31f7e56d6f3460500.jpg", "modelo": "AFA ARQUERO TITULAR", "precio": 32000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/5da9e1e21e8c00bfa4881ff24ccc53403de1321fa12a4fec7ca60c8aa0861486460500.jpg", "modelo": "ALEMANIA 2026", "precio": 32000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/f2d1863f8a713083766925d190134f05f6b61e6384a59a8616738deb49017f13460500.jpg", "modelo": "BOCA JUNIORS ENTRENAMIENTO BLANCA", "precio": 30000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/b4fa21b413ea024c168bb94c9082461e3aea1b593c3e2470f2e3184a650b3030460500.jpg", "modelo": "NAPOLI MARADONA", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/f27f92b559c1dc67c0c3d5b87f675b5af3bc3690ba862dc250e78aad864831a5460500.jpg", "modelo": "RIVER PLATE 1997", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/3c974269ba5096a6ef30e14bb11390bb252a292d2be2ed13241f38732b223f32460500.jpg", "modelo": "LIVERPOOL RETRO NEGRA", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/4b4cef9ec9f9be9dcfd9be3ab634cc0ee262b56cddd04dd5500832ad65d5a840460500.jpg", "modelo": "BUZO AFA EQT NEGRO", "precio": 42000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/38a62ffaeed953e79ad51f67264fde3d5f93a4d704e577fc1713cc5b2fc94cc9460500.jpg", "modelo": "BOCA PARMALAT", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/589f053ba2ab2f82e4448611c072a964fd53c7f1bd0911ea2e53c1d07ecc0a00460500.jpg", "modelo": "BOCA JUNIORS 1994", "precio": 35000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/32b52d301ab48d8b162e8b5b0116a22e7461186762b55b926471d990d2b00ece460500.jpg", "modelo": "BUZO ENTRENAMIENTO RIVER ROJO", "precio": 42000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/fd0d487d15f98b4738cc72773c4cb7c93b8f41ff0806c8f0fb2de5df2976829b460500.jpg", "modelo": "AJAX 2025", "precio": 32000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/143523cb4547260a89982e84c84803ef81b010dea6dba4604e08e104d788c99b460500.jpg", "modelo": "BUZO BOCA EQT QUILMES", "precio": 42000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/12709519754aff93721cbc0062742442f08e8ca22a2c90aac2f92abaa9878918460500.png", "modelo": "BUZO RIVER PLATE 94", "precio": 42000 },
+      { "foto": "https://d22fxaf9t8d39k.cloudfront.net/902c82f4161e03c14820789d528f257e0fd04c09b50255e3205ec2c60277faa4460500.jpg", "modelo": "RIVER PLATE PRE MATCH BLANCA", "precio": 32000 }
+    ];
+
+    let currentFilter = 'all';
+    let searchQuery = '';
+
+    // Formatear precios como moneda local (Ej: $ 35.000)
+    function formatPrice(amount) {
+      if (!amount) return 'Consultar';
+      return '$ ' + amount.toLocaleString('es-AR');
+    }
+
+    // Generar enlace personalizado de WhatsApp
+    function getWhatsappLink(modelo, precio) {
+      const precioTexto = formatPrice(precio);
+      const message = encodeURIComponent(`Hola! Quisiera consultar/encargar la prenda: *${modelo}* (${precioTexto}). ¿Tienen stock disponible?`);
+      return `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+    }
+
+    // Helper: Categorizar productos
+    function getItemCategory(modelo) {
+      const name = modelo.toUpperCase();
+      if (name.includes('BOCA')) return 'BOCA';
+      if (name.includes('RIVER')) return 'RIVER';
+      if (name.includes('AFA') || name.includes('ARGENTINA')) return 'AFA';
+      if (name.includes('NIÑO') || name.includes('DAMA')) return 'NIÑO';
+      if (name.includes('1986') || name.includes('1992') || name.includes('1994') || name.includes('1997') || name.includes('1998') || name.includes('1999') || name.includes('2002') || name.includes('2003') || name.includes('2005') || name.includes('2006') || name.includes('2010') || name.includes('2012') || name.includes('OG') || name.includes('RETRO') || name.includes('EQT')) return 'RETRO';
+      return 'EUROPA';
+    }
+
+    // DOM Elements
+    const grid = document.getElementById('productsGrid');
+    const searchInput = document.getElementById('searchInput');
+    const clearSearch = document.getElementById('clearSearch');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const productCounter = document.getElementById('productCounter');
+    const emptyState = document.getElementById('emptyState');
+    const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+
+    // Modal Elements
+    const productModal = document.getElementById('productModal');
+    const modalContainer = document.getElementById('modalContainer');
+    const closeModal = document.getElementById('closeModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalPrice = document.getElementById('modalPrice');
+    const modalWhatsappBtn = document.getElementById('modalWhatsappBtn');
+
+    // Render Cards
+    function renderProducts() {
+      grid.innerHTML = '';
+
+      const filtered = products.filter(item => {
+        const matchesSearch = item.modelo.toLowerCase().includes(searchQuery.toLowerCase());
+        const category = getItemCategory(item.modelo);
+
+        let matchesFilter = false;
+        if (currentFilter === 'all') {
+          matchesFilter = true;
+        } else if (currentFilter === 'EUROPA') {
+          matchesFilter = ['BARCELONA', 'REAL MADRID', 'LIVERPOOL', 'CHELSEA', 'ARSENAL', 'INTER', 'NAPOLI', 'PORTUGAL', 'FRANCIA', 'BRASIL', 'ALEMANIA', 'AJAX', 'CORINTHIANS', 'NORUEGA', 'MANCHESTER'].some(team => item.modelo.toUpperCase().includes(team));
+        } else {
+          matchesFilter = category === currentFilter || item.modelo.toUpperCase().includes(currentFilter);
+        }
+
+        return matchesSearch && matchesFilter;
+      });
+
+      productCounter.textContent = `Mostrando ${filtered.length} de ${products.length} productos`;
+
+      if (filtered.length === 0) {
+        emptyState.classList.remove('hidden');
+        emptyState.classList.add('flex');
+      } else {
+        emptyState.classList.add('hidden');
+        emptyState.classList.remove('flex');
+      }
+
+      filtered.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between cursor-pointer';
+
+        card.innerHTML = `
+          <div class="relative bg-slate-100 aspect-square overflow-hidden">
+            <img 
+              src="${item.foto}" 
+              alt="${item.modelo}"
+              loading="lazy"
+              onerror="this.src='https://via.placeholder.com/400x400?text=Camiseta'"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition-colors duration-300"></div>
+          </div>
+          <div class="p-3.5 flex-1 flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-sky-600 bg-sky-50 px-2 py-0.5 rounded-md inline-block mb-1.5">
+                ${getItemCategory(item.modelo)}
+              </span>
+              <h3 class="text-xs sm:text-sm font-bold text-slate-800 line-clamp-2 leading-snug group-hover:text-sky-600 transition-colors">
+                ${item.modelo}
+              </h3>
+            </div>
+            
+            <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <!-- Precio Destacado -->
+              <span class="text-sm font-extrabold text-emerald-600">
+                ${formatPrice(item.precio)}
+              </span>
+              
+              <!-- Botón / Icono pedir -->
+              <span class="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold group-hover:bg-emerald-600 group-hover:text-white transition-colors flex items-center gap-1">
+                <i class="fa-brands fa-whatsapp text-sm"></i>
+                <span class="hidden sm:inline">Pedir</span>
+              </span>
+            </div>
+          </div>
+        `;
+
+        card.addEventListener('click', () => openModal(item));
+        grid.appendChild(card);
+      });
+    }
+
+    // Modal Control
+    function openModal(item) {
+      modalImage.src = item.foto;
+      modalTitle.textContent = item.modelo;
+      modalPrice.textContent = formatPrice(item.precio);
+      modalWhatsappBtn.href = getWhatsappLink(item.modelo, item.precio);
+
+      productModal.classList.remove('hidden');
+      setTimeout(() => {
+        modalContainer.classList.remove('scale-95', 'opacity-0');
+        modalContainer.classList.add('scale-100', 'opacity-100');
+      }, 10);
+    }
+
+    function closeModalHandler() {
+      modalContainer.classList.remove('scale-100', 'opacity-100');
+      modalContainer.classList.add('scale-95', 'opacity-0');
+      setTimeout(() => {
+        productModal.classList.add('hidden');
+      }, 200);
+    }
+
+    // Event Listeners
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value.trim();
+      clearSearch.classList.toggle('hidden', searchQuery === '');
+      renderProducts();
+    });
+
+    clearSearch.addEventListener('click', () => {
+      searchInput.value = '';
+      searchQuery = '';
+      clearSearch.classList.add('hidden');
+      renderProducts();
+    });
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => {
+          b.classList.remove('active', 'bg-slate-900', 'text-white');
+          b.classList.add('bg-slate-100', 'text-slate-700');
+        });
+
+        btn.classList.add('active', 'bg-slate-900', 'text-white');
+        btn.classList.remove('bg-slate-100', 'text-slate-700');
+
+        currentFilter = btn.dataset.filter;
+        renderProducts();
+      });
+    });
+
+    resetFiltersBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      searchQuery = '';
+      clearSearch.classList.add('hidden');
+      currentFilter = 'all';
+      filterBtns[0].click();
+    });
+
+    closeModal.addEventListener('click', closeModalHandler);
+    productModal.addEventListener('click', (e) => {
+      if (e.target === productModal) closeModalHandler();
+    });
+
+    // Initial Render
+    renderProducts();
+  </script>
+</body>
+</html>
